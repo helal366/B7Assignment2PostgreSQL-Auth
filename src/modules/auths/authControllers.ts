@@ -1,0 +1,21 @@
+import type {Request,Response, NextFunction } from "express";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { authServices } from "./authServices.js";
+import { setAuthtokensInCookies } from "../../utils/setAuthTokensInCookies.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { StatusCodes } from "http-status-codes";
+
+const authUserSignUpController=catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
+    const tokens = await authServices.authUserSignUpServices(req.body);
+    // console.log(tokens)
+    setAuthtokensInCookies(res, tokens);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: "User registered successfully.",
+        data: tokens.user,
+      });
+})
+export const authControllers= {
+    authUserSignUpController
+}
