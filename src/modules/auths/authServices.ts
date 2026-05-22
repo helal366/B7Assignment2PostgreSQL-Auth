@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../utils/appError.js";
-import type { IUserSignUp, Role } from "./authInterfaces.js"
+import type { IUserLogin, IUserSignUp, Role } from "./authInterfaces.js"
 import { pool } from "../../db/index.js";
 import bcrypt from "bcrypt"
 import { envVars } from "../../configs/env.js";
@@ -42,6 +42,29 @@ const authUserSignUpServices=async(payload:IUserSignUp)=>{
         user
     }
 }
+const authUserLoginServices=async(payload:IUserLogin)=>{
+    const {email, password}=payload;
+    if(!email){
+        throw new AppError(StatusCodes.NOT_FOUND, "Email not provided")
+    }
+    if(!password){
+        throw new AppError(StatusCodes.NOT_FOUND, "Email not provided")
+    }
+    const userData= await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
+    if(userData.rows.length===0){
+        throw new AppError(StatusCodes.NOT_FOUND, "User not found.")
+    }
+    const user = userData.rows[0];
+    delete user.password;
+    const accessToken = generateAccessToken(user);
+    const refreshToken=generateRefreshToken(user)
+    return {
+        accessToken,
+        refreshToken,
+        user
+    }
+}
 export const authServices={
-    authUserSignUpServices
+    authUserSignUpServices,
+    authUserLoginServices
 }

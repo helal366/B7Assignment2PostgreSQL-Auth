@@ -16,6 +16,20 @@ const authUserSignUpController=catchAsync(async(req:Request, res:Response, next:
         data: tokens.user,
       });
 })
+const authUserLoginController=catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
+    const loginInfo = await authServices.authUserLoginServices(req.body);
+    setAuthtokensInCookies(res, loginInfo);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: "Login successful.",
+        data: {
+            token: loginInfo.accessToken,
+            user:loginInfo.user
+        },
+      });
+})
 export const authControllers= {
-    authUserSignUpController
+    authUserSignUpController,
+    authUserLoginController
 }

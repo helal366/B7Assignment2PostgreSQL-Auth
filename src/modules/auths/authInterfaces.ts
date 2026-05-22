@@ -11,3 +11,4 @@ export interface IAuthTokens{
     accessToken:string,
     refreshToken:string
 }
+export type IUserLogin= Pick<IUserSignUp, "email" | "password">
