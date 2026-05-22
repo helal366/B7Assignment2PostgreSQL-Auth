@@ -8,17 +8,17 @@ import { StatusCodes } from "http-status-codes";
 const authUserSignUpController=catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
     const tokens = await authServices.authUserSignUpServices(req.body);
     // console.log(tokens)
-    setAuthtokensInCookies(res, tokens);
+    setAuthtokensInCookies(req,res, tokens);
     sendResponse(res, {
         success: true,
-        statusCode: StatusCodes.OK,
+        statusCode: StatusCodes.CREATED,
         message: "User registered successfully.",
         data: tokens.user,
       });
 })
 const authUserLoginController=catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
     const loginInfo = await authServices.authUserLoginServices(req.body);
-    setAuthtokensInCookies(res, loginInfo);
+    setAuthtokensInCookies(req,res, loginInfo);
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,

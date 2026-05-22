@@ -1,7 +1,7 @@
 import type { Response } from "express"
 interface IResponse<T>{
     statusCode:number,
-    success:true,
+    success:boolean,
     message:string,
     data?:T,
     error?:any

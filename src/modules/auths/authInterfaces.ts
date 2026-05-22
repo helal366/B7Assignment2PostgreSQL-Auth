@@ -1,4 +1,8 @@
 export type Role= "contributor" | "maintainer"
+export enum ERole{
+    contributor="contributor",
+    maintainer="maintainer"
+}
 export interface IUser{
     id:number;
     name:string;
