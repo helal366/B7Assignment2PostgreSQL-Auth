@@ -17,7 +17,6 @@ const createIssueController = catchAsync(
       throw new AppError(StatusCodes.UNAUTHORIZED, "Unauthorized access!");
     }
     const result = await issueServices.createIssueServices(req.body, user.id);
-    // console.log({result})
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.CREATED,
@@ -77,7 +76,6 @@ const getAllIssuesController = catchAsync(
       finalType,
       finalStatus,
     );
-    console.log(result);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.CREATED,
@@ -86,7 +84,17 @@ const getAllIssuesController = catchAsync(
     });
   },
 );
+const getSingleIssueController=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
+    const {id}=req.params;
+    const result =await issueServices.getSingleIssueServices(Number(id));
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      data: result,
+    });
+})
 export const issueControllers = {
   createIssueController,
   getAllIssuesController,
+  getSingleIssueController
 };

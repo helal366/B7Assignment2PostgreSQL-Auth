@@ -7,10 +7,11 @@ interface EnvVariables{
     ACCESS_SECRET:string;
     ACCESS_TOKEN_EXPIRESIN:string;
     REFRESH_SECRET:string;
-    REFRESH_TOKEN_EXPIRESIN:string
+    REFRESH_TOKEN_EXPIRESIN:string,
+    NODE_ENV:string
 }
 const loadEnvVariables=():EnvVariables=>{
-    const envVars:string[]=["NEON_DB_LINK", "PORT", "BCRYPT_SALT","ACCESS_SECRET","ACCESS_TOKEN_EXPIRESIN","REFRESH_SECRET", "REFRESH_TOKEN_EXPIRESIN"];
+    const envVars:string[]=["NEON_DB_LINK", "PORT", "BCRYPT_SALT","ACCESS_SECRET","ACCESS_TOKEN_EXPIRESIN","REFRESH_SECRET", "REFRESH_TOKEN_EXPIRESIN", "NODE_ENV"];
     for(const varName of envVars){
         if(!process.env[varName]){
             throw new Error(`Required environment variable missing: ${varName}`)
@@ -23,7 +24,8 @@ const loadEnvVariables=():EnvVariables=>{
         ACCESS_SECRET:process.env.ACCESS_SECRET as string,
         ACCESS_TOKEN_EXPIRESIN:process.env.ACCESS_TOKEN_EXPIRESIN as string,
         REFRESH_SECRET:process.env.REFRESH_SECRET as string,
-        REFRESH_TOKEN_EXPIRESIN:process.env.REFRESH_TOKEN_EXPIRESIN as string
+        REFRESH_TOKEN_EXPIRESIN:process.env.REFRESH_TOKEN_EXPIRESIN as string,
+        NODE_ENV:process.env.NODE_ENV as string
     }
 }
 export const envVars=loadEnvVariables()

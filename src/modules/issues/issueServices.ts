@@ -77,7 +77,17 @@ const getAllIssuesServices = async (
   const issues = await pool.query(query, values);
   return issues.rows;
 };
+const getSingleIssueServices=async(id:number)=>{
+    console.log(id, typeof id)
+    const issueData= await pool.query(`SELECT * FROM issues WHERE id=$1`, [id]);
+    if(issueData.rows.length===0){
+        throw new AppError(StatusCodes.NOT_FOUND,"No issue found.")
+    }
+    const issue= issueData.rows[0];
+    return issue
+}
 export const issueServices = {
   createIssueServices,
   getAllIssuesServices,
+  getSingleIssueServices
 };
