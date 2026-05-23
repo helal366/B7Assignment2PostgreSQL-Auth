@@ -118,9 +118,17 @@ const updateIssueServices=async(issueId:number, payload:TUpdateIssue, user:jwt.J
   
   return result.rows[0]
 }
+const deleteIssueServices=async(issueId:number)=>{
+  const result=await pool.query(`DELETE FROM issues WHERE id=$1 RETURNING *`,[issueId]);
+  if(result.rowCount===0){
+    throw new AppError(StatusCodes.NOT_FOUND, "Issue not found. Failed to delete")
+  }
+  console.log(result.rows[0])
+}
 export const issueServices = {
   createIssueServices,
   getAllIssuesServices,
   getSingleIssueServices,
-  updateIssueServices
+  updateIssueServices,
+  deleteIssueServices
 };

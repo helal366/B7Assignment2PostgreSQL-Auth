@@ -7,4 +7,5 @@ export const issueRoutes = Router();
 issueRoutes.post('/',checkAuth() ,issueControllers.createIssueController);
 issueRoutes.get('/', issueControllers.getAllIssuesController);
 issueRoutes.get('/:id', issueControllers.getSingleIssueController);
-issueRoutes.patch('/:id',checkAuth(ERole.maintainer, ERole.contributor), issueControllers.updateIssueController)
+issueRoutes.patch('/:id',checkAuth(ERole.maintainer, ERole.contributor), issueControllers.updateIssueController);
+issueRoutes.delete('/:id', checkAuth(ERole.maintainer), issueControllers.deleteIssueController)
