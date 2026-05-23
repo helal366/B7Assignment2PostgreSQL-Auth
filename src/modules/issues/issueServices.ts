@@ -52,7 +52,6 @@ const createIssueServices = async (
     [title, description, type, finalStatus, reporter_id],
   );
   const createdIssue = result.rows[0];
-  // console.log({createdIssue})
   return createdIssue;
 };
 
@@ -81,7 +80,6 @@ const getAllIssuesServices = async (
   return issues.rows;
 };
 const getSingleIssueServices = async (id: number) => {
-  console.log(id, typeof id);
   const issueData = await pool.query(`SELECT * FROM issues WHERE id=$1`, [id]);
   if (issueData.rows.length === 0) {
     throw new AppError(StatusCodes.NOT_FOUND, "No issue found.");
@@ -144,7 +142,6 @@ const deleteIssueServices = async (issueId: number) => {
       "Issue not found. Failed to delete",
     );
   }
-  console.log(result.rows[0]);
 };
 export const issueServices = {
   createIssueServices,

@@ -7,7 +7,6 @@ import { StatusCodes } from "http-status-codes";
 
 const authUserSignUpController=catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
     const tokens = await authServices.authUserSignUpServices(req.body);
-    // console.log(tokens)
     setAuthtokensInCookies(req,res, tokens);
     sendResponse(res, {
         success: true,
