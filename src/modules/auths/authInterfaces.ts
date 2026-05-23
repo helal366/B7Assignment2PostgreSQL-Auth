@@ -15,6 +15,6 @@ export type IUserSignUp=Omit<IUser, "id"> & {password:string}
 
 export interface IAuthTokens{
     accessToken:string,
-    refreshToken:string
+    refreshToken?:string
 }
 export type IUserLogin= Pick<IUserSignUp, "email" | "password">

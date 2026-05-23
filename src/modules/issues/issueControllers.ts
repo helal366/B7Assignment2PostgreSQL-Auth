@@ -64,7 +64,7 @@ const getAllIssuesController = catchAsync(
     );
     sendResponse(res, {
       success: true,
-      statusCode: StatusCodes.CREATED,
+      statusCode: StatusCodes.OK,
       message: "Issues retrieved successfully.",
       data: result,
     });
@@ -96,7 +96,7 @@ const updateIssueController = catchAsync(
     typeStatusValidity(req.body)
     
     const result = await issueServices.updateIssueServices(
-      Number(id),
+      idNumber,
       req.body,
       user as jwt.JwtPayload
     );

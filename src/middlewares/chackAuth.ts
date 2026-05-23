@@ -10,7 +10,7 @@ export const checkAuth =
     try {
       const accessToken = req.headers.authorization;
       if (!accessToken) {
-        throw new AppError(StatusCodes.NOT_FOUND, "Token not found");
+        throw new AppError(StatusCodes.UNAUTHORIZED, "Unauthorized access. Token not found");
       }
       
       const verifyJwtToken = (token: string, secret: string) => {

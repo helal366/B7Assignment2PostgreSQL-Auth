@@ -8,7 +8,7 @@ import { generateAccessToken, generateRefreshToken } from "../../utils/jwtTokens
 
 const authUserSignUpServices=async(payload:IUserSignUp)=>{
     if(!payload || Object.keys(payload).length===0){
-        throw new AppError(StatusCodes.NOT_FOUND, "No information provided. Please provide required informations.")
+        throw new AppError(StatusCodes.BAD_REQUEST, "No information provided. Please provide required informations.")
     }
    const {name, email, password, role}=payload;
    const requiredInfo:(keyof IUserSignUp)[]=["name","email", "password"];
@@ -48,19 +48,21 @@ const authUserLoginServices=async(payload:IUserLogin)=>{
         throw new AppError(StatusCodes.NOT_FOUND, "Email not provided")
     }
     if(!password){
-        throw new AppError(StatusCodes.NOT_FOUND, "Email not provided")
+        throw new AppError(StatusCodes.NOT_FOUND, "Password not provided")
     }
     const userData= await pool.query(`SELECT * FROM users WHERE email=$1`, [email]);
     if(userData.rows.length===0){
         throw new AppError(StatusCodes.NOT_FOUND, "User not found.")
     }
     const user = userData.rows[0];
+    const isMatch= await bcrypt.compare(password, user.password);
+    if(!isMatch){
+        throw new AppError(StatusCodes.UNAUTHORIZED,"Invalid credentials.")
+    }
     delete user.password;
     const accessToken = generateAccessToken(user);
-    const refreshToken=generateRefreshToken(user)
     return {
         accessToken,
-        refreshToken,
         user
     }
 }

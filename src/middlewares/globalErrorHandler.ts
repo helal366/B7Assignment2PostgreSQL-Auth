@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/appError.js";
+import { envVars } from "../configs/env.js";
 
 export const globalErrorHandler = (
   error: Error | AppError | any,
@@ -54,7 +55,7 @@ export const globalErrorHandler = (
   return res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === "development" && {
+    ...(envVars.NODE_ENV === "development" && {
       stack: error instanceof Error ? error.stack : undefined,
     }),
   });
