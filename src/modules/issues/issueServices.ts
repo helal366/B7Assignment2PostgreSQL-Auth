@@ -5,8 +5,10 @@ import {
   type CreateIssuePayload,
   type TIssueStatus,
   type TIssueType,
+  type TUpdateIssue,
 } from "./issueInterfaces.js";
 import { pool } from "../../db/index.js";
+import jwt from 'jsonwebtoken';
 
 const createIssueServices = async (
   payload: CreateIssuePayload,
@@ -86,8 +88,39 @@ const getSingleIssueServices=async(id:number)=>{
     const issue= issueData.rows[0];
     return issue
 }
+const updateIssueServices=async(issueId:number, payload:TUpdateIssue, user:jwt.JwtPayload)=>{
+  const fieldKeys=Object.keys(payload);
+  const fieldValues=Object.values(payload);
+  if (fieldValues.length===0) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "No valid field provided!");
+  }
+  const issueData = await pool.query(`SELECT * FROM issues WHERE id=$1`, [issueId]);
+  if(issueData.rowCount===0){
+    throw new AppError(StatusCodes.NOT_FOUND, "Issue not found.");
+  }
+  const issue = issueData.rows[0];
+  if(user.role==="contributor"){
+    if(issue.reporter_id!==user.id){
+      throw new AppError(StatusCodes.UNAUTHORIZED, "Contributor can only update their own issues.")
+    }
+    if(issue.status!=="open"){
+      throw new AppError(StatusCodes.BAD_REQUEST, `Contributor can only update their own issue only when status is 'open'. Current issue status is ${issue.status}`)
+    }
+  }
+  const setPart = fieldKeys.map((key, index)=>(`${key} = $${index+1}`)).join(", ");
+  const query = `
+  UPDATE issues 
+  SET ${setPart}
+  WHERE id=$${fieldKeys.length+1}
+  RETURNING *
+  `
+  const result = await pool.query(query, [...fieldValues, issueId]);
+  
+  return result.rows[0]
+}
 export const issueServices = {
   createIssueServices,
   getAllIssuesServices,
-  getSingleIssueServices
+  getSingleIssueServices,
+  updateIssueServices
 };

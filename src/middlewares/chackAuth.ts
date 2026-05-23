@@ -12,6 +12,7 @@ export const checkAuth =
       if (!accessToken) {
         throw new AppError(StatusCodes.NOT_FOUND, "Token not found");
       }
+      
       const verifyJwtToken = (token: string, secret: string) => {
         const verifiedToken = jwt.verify(token, secret);
         return verifiedToken;
@@ -20,7 +21,7 @@ export const checkAuth =
         accessToken,
         envVars.ACCESS_SECRET,
       ) as JwtPayload;
-      if (!authRoles.includes(verifyToken.role))
+      if (authRoles.length>0 && !authRoles.includes(verifyToken.role))
         throw new AppError(
           StatusCodes.FORBIDDEN,
           "The current role is not permitted",

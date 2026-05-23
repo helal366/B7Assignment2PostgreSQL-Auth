@@ -4,11 +4,13 @@ import { issueServices } from "./issueServices.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../utils/appError.js";
+import jwt from "jsonwebtoken"
 import {
   EIssueSort,
   type TIssueStatus,
   type TIssueType,
 } from "./issueInterfaces.js";
+import { typeStatusValidity } from "./typeStatusValidity.js";
 
 const createIssueController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -43,34 +45,18 @@ const getAllIssuesController = catchAsync(
       }
       finalSort = sort as EIssueSort;
     }
-    const allowedTypes: TIssueType[] = ["bug", "feature_request"];
-    let finalType:TIssueType | undefined;
-    if (type) {
-      if (
-        typeof type !== "string" ||
-        !allowedTypes.includes(type as TIssueType)
-      ) {
-        throw new AppError(
-          StatusCodes.BAD_REQUEST,
-          "Invalid type value. Allowed values are 'bug' or 'feature_request'.",
-        );
-      }
-    }
-    finalType=type as TIssueType;
-    const allowedStatus: TIssueStatus[] = ["open", "in_progress", "resolved"];
-    let finalStatus:TIssueStatus|undefined
-    if (status) {
-      if (
-        typeof status !== "string" ||
-        !allowedStatus.includes(status as TIssueStatus)
-      ) {
-        throw new AppError(
-          StatusCodes.BAD_REQUEST,
-          "Invalid status value. Allowed values are 'open' or 'in_progress' or 'resolved'.",
-        );
-      }
-    }
-    finalStatus= status as TIssueStatus
+    
+    let finalType: TIssueType | undefined;
+    let finalStatus: TIssueStatus | undefined;
+     typeStatusValidity({type, status})
+
+   if(type){
+       finalType = type as TIssueType;
+     }
+   if(status){
+     finalStatus = status as TIssueStatus;
+   }
+   
     const result = await issueServices.getAllIssuesServices(
       finalSort,
       finalType,
@@ -84,17 +70,47 @@ const getAllIssuesController = catchAsync(
     });
   },
 );
-const getSingleIssueController=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
-    const {id}=req.params;
-    const result =await issueServices.getSingleIssueServices(Number(id));
+const getSingleIssueController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await issueServices.getSingleIssueServices(Number(id));
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       data: result,
     });
-})
+  },
+);
+const updateIssueController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+   const user= req.user;
+   if(!user){
+    throw new AppError(StatusCodes.UNAUTHORIZED, "Unauthorized access")
+   }
+    const { id } = req.params;
+    const idNumber= Number(id);
+    if(isNaN(idNumber)){
+      throw new AppError(StatusCodes.BAD_REQUEST,"Invalid ID.")
+    }
+    
+    typeStatusValidity(req.body)
+    
+    const result = await issueServices.updateIssueServices(
+      Number(id),
+      req.body,
+      user as jwt.JwtPayload
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:"Issue updated successfully",
+      data: { result},
+    });
+  },
+);
 export const issueControllers = {
   createIssueController,
   getAllIssuesController,
-  getSingleIssueController
+  getSingleIssueController,
+  updateIssueController,
 };

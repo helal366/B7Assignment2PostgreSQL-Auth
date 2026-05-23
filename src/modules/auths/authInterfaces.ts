@@ -7,7 +7,9 @@ export interface IUser{
     id:number;
     name:string;
     email:string;
-    role:Role
+    role:Role,
+    created_at?:Date,
+    updated_at?:Date
 }
 export type IUserSignUp=Omit<IUser, "id"> & {password:string}
 

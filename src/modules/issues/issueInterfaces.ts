@@ -18,3 +18,4 @@ export enum EIssueSort {
   newest = "newest",
   oldest = "oldest",
 }
+export type TUpdateIssue=Partial<Pick<IIssue, "title" | "description" | "type" | "status">>
